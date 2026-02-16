@@ -1,0 +1,27 @@
+# this file : Defines how your app runs: which containers, ports, environment variables, volumes, dependencies, scaling. Lets you run multiple services together with a single command (docker-compose up).
+
+version: '3.9'
+
+services:
+  app:
+    build: .
+    container_name: kameti-web-app
+    restart: unless-stopped
+    ports:
+      - '8000:8000'
+    env_file:
+      - .env.development
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongo:6
+    container_name: kameti-mongo
+    restart: unless-stopped
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongo-data:/data/db
+
+volumes:
+  mongo-data:
