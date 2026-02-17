@@ -1,4 +1,5 @@
-import { IsNotEmpty, IsString } from "class-validator";
+import { IsNotEmpty, IsOptional, IsString } from "class-validator";
+import { UserRole } from "src/common/enums/user-role.enum";
 
 export class AuthSignDto {
     @IsString()
@@ -8,6 +9,14 @@ export class AuthSignDto {
     @IsString()
     @IsNotEmpty()
     email: string;
+
+    @IsString()
+    @IsOptional()
+    role: UserRole;
+
+    @IsString()
+    @IsOptional()
+    phoneNumber: string;
 
     @IsString()
     @IsNotEmpty()

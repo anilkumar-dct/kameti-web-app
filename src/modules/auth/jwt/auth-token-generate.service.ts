@@ -1,19 +1,20 @@
 import { Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { JwtPayload } from "./interface";
-import { Admin } from "src/modules/admin/entities/admin.entity";
+import { User as Admin } from "src/common/entities/user.entity";
 import { ConfigService } from "src/config/config.service";
-import { AdminService } from "src/modules/admin/admin.service";
-import { AdminResponseDto } from "src/modules/admin/dto/admin-response.dto";
+import { UserService } from "src/modules/users/user.service";
+import { UserResponseDto } from "src/common/dto/user-response.dto";
 import { Response } from "express";
 
 @Injectable()
 export class AuthTokenGenerateService {
-    constructor(private readonly jwtService: JwtService, private readonly configService: ConfigService, private readonly adminService: AdminService) {}
+    constructor(private readonly jwtService: JwtService, private readonly configService: ConfigService, private readonly userService: UserService) {}
 
-    generateToken(admin: AdminResponseDto): string {
+    generateToken(user: UserResponseDto): string {
         const payload: JwtPayload = {
-            id: admin._id.toString(),
+            id: user._id.toString(),
+            role: user.role!,
         };
 
         const expiresIn = this.configService.jwtExpiration;
@@ -22,12 +23,12 @@ export class AuthTokenGenerateService {
         } as any);
     }
 
-    async validateUser(userId: number): Promise<AdminResponseDto> {
-        const admin = await this.adminService.findById(userId.toString());
-        if(!admin){
-            throw new Error("Admin not found");
+    async validateUser(userId: number): Promise<UserResponseDto> {
+        const user = await this.userService.findById(userId.toString());
+        if(!user){
+            throw new Error("User not found");
         }
-        return admin.data!;
+        return user.data!;
     }
 
     storeValueInCookie(res: Response, key: string, value: string): void {

@@ -3,7 +3,7 @@ import type { Response } from 'express';
 import { AuthService } from './auth.service';
 import { AuthSignDto } from './dto/auth-sign.dto';
 import { AuthLoginDto } from './dto/auth-login.dto';
-import { AdminAuthGuard } from './admin-auth.guard';
+import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -11,7 +11,6 @@ export class AuthController {
 
     @Post('signup')
     async signup(@Body() authSignDto: AuthSignDto, @Res({ passthrough: true }) res: Response) {
-        console.log(authSignDto);
         return this.authService.register(authSignDto, res);
     }
 

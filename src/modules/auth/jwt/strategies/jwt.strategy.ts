@@ -5,11 +5,11 @@ import { Injectable } from '@nestjs/common';
 import { JwtPayload } from '../interface';
 
 import { ConfigService } from '../../../../config/config.service';
-import { AdminService } from 'src/modules/admin/admin.service';
+import { UserService } from 'src/modules/users/user.service';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor(private configService: ConfigService, private adminService: AdminService) {
+  constructor(private configService: ConfigService, private userService: UserService) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
         (request: any) => {
@@ -25,10 +25,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     if (!payload.id) {
       return null;
     }
-    const admin = await this.adminService.findById(payload.id.toString());
-    if(!admin || !admin.data){
+    const user = await this.userService.findById(payload.id.toString());
+    if(!user || !user.data){
       return null;
     }
-    return { userId: payload.id };
+    return { userId: payload.id, role: payload.role };
   }
 }

@@ -1,34 +1,53 @@
-import { Body, Controller, Get, Param, Patch, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Param, Patch, Post, UseGuards, Request } from "@nestjs/common";
+import { Request as ExpressRequest } from "express";
 import { UserService } from "./user.service";
 import { CreateUserDto } from "./dtos/create-user.dto";
-import { UserDocument } from "./entities/user.entity";
+import { RolesGuard } from "src/common/guards/roles.guard";
+import { Roles } from "src/common/decorators/roles.decorator";
+import { UserRole } from "src/common/enums/user-role.enum";
 import { ApiResponse } from "src/common/response/api.response";
+import { JwtAuthGuard } from "src/common/guards/jwt-auth.guard";
 import { UpdateUserDto } from "./dtos/update-user.dto";
-import { AdminAuthGuard } from "../auth/admin-auth.guard";
+import { UserResponseDto } from "src/common/dto/user-response.dto";
+
+interface AuthenticatedRequest extends ExpressRequest {
+    user: {
+        userId: string;
+        role: string;
+    }
+}
 
 @Controller('user')
 export class UserController {
     constructor(private readonly userService: UserService) {}
 
     @Post()
-    async createUser(@Body() createUserDto: CreateUserDto): Promise<ApiResponse<UserDocument>> {
+    async createUser(@Body() createUserDto: CreateUserDto): Promise<ApiResponse<UserResponseDto>> {
         return this.userService.createUser(createUserDto);
     }
 
-    @UseGuards(AdminAuthGuard)
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(UserRole.ADMIN)
     @Get()
-    async findAll(): Promise<ApiResponse<UserDocument[]>> {
-        return this.userService.findAll();
+    async findAll(): Promise<ApiResponse<UserResponseDto[]>> {
+        return await this.userService.findAll();
     }
 
-    @UseGuards(AdminAuthGuard)
+    @UseGuards(JwtAuthGuard)
+    @Get('profile')
+    async getProfile(@Request() req: AuthenticatedRequest): Promise<ApiResponse<UserResponseDto>> {
+        return this.userService.findById(req.user.userId.toString());
+    }
+
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(UserRole.ADMIN)
     @Get(':id')
-    async findById(@Param('id') id: string): Promise<ApiResponse<UserDocument>> {
+    async findById(@Param('id') id: string): Promise<ApiResponse<UserResponseDto>> {
         return this.userService.findById(id);
     }
 
     @Patch(':id')
-    async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto): Promise<ApiResponse<UserDocument>> {
+    async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto): Promise<ApiResponse<UserResponseDto>> {
         return this.userService.update(id, updateUserDto);
     }
 }

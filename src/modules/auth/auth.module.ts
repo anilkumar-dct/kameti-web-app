@@ -2,7 +2,7 @@
 import { Module } from '@nestjs/common';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { AdminModule } from '../admin/admin.module';
+import { UserModule } from '../users/user.module';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './jwt/strategies/jwt.strategy';
@@ -12,7 +12,7 @@ import { AuthTokenGenerateService } from './jwt/auth-token-generate.service';
 
 @Module({
   imports: [
-    AdminModule,
+    UserModule,
     PassportModule,
     ConfigModule,
     JwtModule.registerAsync({
