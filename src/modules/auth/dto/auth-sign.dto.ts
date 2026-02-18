@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsOptional, IsString } from "class-validator";
+import { IsEmail, IsNotEmpty, IsOptional, IsString } from "class-validator";
 import { UserRole } from "src/common/enums/user-role.enum";
 
 export class AuthSignDto {
@@ -8,17 +8,26 @@ export class AuthSignDto {
 
     @IsString()
     @IsNotEmpty()
+    @IsEmail()
     email: string;
 
     @IsString()
     @IsOptional()
-    role: UserRole;
+    role?: UserRole;
 
     @IsString()
     @IsOptional()
-    phoneNumber: string;
+    phoneNumber?: string;
 
     @IsString()
     @IsNotEmpty()
     password: string;
+
+    @IsString() 
+    @IsOptional()
+    trailStartDate?: Date;
+
+    @IsString()
+    @IsOptional()
+    trailEndDate?: Date;
 }

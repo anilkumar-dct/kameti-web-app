@@ -21,7 +21,7 @@ interface AuthenticatedRequest extends ExpressRequest {
 export class UserController {
     constructor(private readonly userService: UserService) {}
 
-    @Post()
+    @Post('create')
     async createUser(@Body() createUserDto: CreateUserDto): Promise<ApiResponse<UserResponseDto>> {
         return this.userService.createUser(createUserDto);
     }

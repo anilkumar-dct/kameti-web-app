@@ -18,6 +18,10 @@ export class UserService {
  ) {}  
  
   async createUser(createUserDto: CreateUserDto): Promise<ApiResponse<UserResponseDto>> {
+    const existingUser = await this.findByEmail(createUserDto.email);
+    if(existingUser.data){
+        return ApiResponse.error("User already exists", "User already exists");
+    }
     const { password, role, ...rest } = createUserDto;
     const hashedPassword = await bcrypt.hash(password, 10);
     
@@ -28,8 +32,8 @@ export class UserService {
         ...rest,
         password: hashedPassword,
         role: userRole,
-        trailStartDate: isAdmin ? null : new Date(),
-        trailEndDate: isAdmin ? null : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+        trailStartDate: isAdmin ? null :( createUserDto.trailStartDate ? createUserDto.trailStartDate : new Date()),
+        trailEndDate: isAdmin ? null : (createUserDto.trailEndDate ? createUserDto.trailEndDate : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)),
     });
 
     if(!user){
