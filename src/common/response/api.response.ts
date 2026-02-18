@@ -14,7 +14,7 @@ export class ApiResponse<T>{
     ) {
         this.status = status;
         this.message = message;
-        if(data && status === ApiStatus.SUCCESS){
+        if(data && (status === ApiStatus.SUCCESS || status === ApiStatus.FAIL)){
             this.data = data;
         }
         if(error && status === ApiStatus.ERROR){
@@ -28,5 +28,9 @@ export class ApiResponse<T>{
 
     static error<T>(message: string, error: string | string[]): ApiResponse<T> {
         return new ApiResponse<T>(ApiStatus.ERROR, message, undefined, error);
+    }
+
+    static fail<T>(message: string, error: string | string[], data?: T): ApiResponse<T> {
+        return new ApiResponse<T>(ApiStatus.FAIL, message, data, error);
     }
 }

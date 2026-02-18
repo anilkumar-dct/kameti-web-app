@@ -19,9 +19,21 @@ export class UserService {
  
   async createUser(createUserDto: CreateUserDto): Promise<ApiResponse<UserResponseDto>> {
     const existingUser = await this.findByEmail(createUserDto.email);
+    
     if(existingUser.data){
+      if(existingUser.data.role === UserRole.ADMIN){
         return ApiResponse.error("User already exists", "User already exists");
+      }
+      const updatedUserDto: UpdateUserDto = {
+        ...createUserDto,
+        trailStartDate: existingUser.data.trailStartDate!,
+        trailEndDate: existingUser.data.trailEndDate!,
+      };
+      
+      const updatedUser = await this.update(existingUser.data._id.toString(), updatedUserDto);
+      return ApiResponse.fail("User already exists", "User already exists", updatedUser.data);
     }
+
     const { password, role, ...rest } = createUserDto;
     const hashedPassword = await bcrypt.hash(password, 10);
     
@@ -45,7 +57,7 @@ export class UserService {
   async findByEmail(email: string): Promise<ApiResponse<UserDocument | null>> {
     const user = await this.userModel.findOne({ email });
     if(!user){
-        return ApiResponse.error("User not found with this email", "User not found");
+        return ApiResponse.fail("User not found with this email", "User not found", user);
     }
     return ApiResponse.success("User found successfully", user);
   }
