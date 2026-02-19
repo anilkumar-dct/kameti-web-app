@@ -30,7 +30,7 @@ export class UserService {
         trailEndDate: existingUser.data.trailEndDate!,
       };
       
-      const updatedUser = await this.update(existingUser.data._id.toString(), updatedUserDto);
+      const updatedUser = await this.update(existingUser.data.email, updatedUserDto);
       return ApiResponse.fail("User already exists", "User already exists", updatedUser.data);
     }
 
@@ -76,28 +76,26 @@ export class UserService {
   }  
 
   async update(email: string, updateUserDto: UpdateUserDto): Promise<ApiResponse<UserResponseDto>> {
-    const user = await this.userModel.findOne({ email });
-    if(!user){
+    const user = await this.findByEmail(email);
+    if(!user.data ){
         return ApiResponse.error("User not found", "User not found");
     }
-
 
     if(updateUserDto.password){
         updateUserDto.password = await bcrypt.hash(updateUserDto.password, 10);
     }
-
     // Role-based trial date management on update
-    if (updateUserDto.role) {
-        if (updateUserDto.role === UserRole.ADMIN) {
+    if (user.data.role) {
+        if (user.data.role === UserRole.ADMIN) {
             updateUserDto.trailStartDate = null;
             updateUserDto.trailEndDate = null;
-        } else if (updateUserDto.role === UserRole.USER && !user.trailStartDate) {
-            updateUserDto.trailStartDate = new Date();
-            updateUserDto.trailEndDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+        } else if (user.data.role === UserRole.USER) {
+            updateUserDto.trailStartDate = user.data.trailStartDate;
+            updateUserDto.trailEndDate = user.data.trailEndDate;
         }
     }
 
-    const updatedUser = await this.userModel.findByIdAndUpdate((user._id).toString(), updateUserDto, { new: true });
+    const updatedUser = await this.userModel.findByIdAndUpdate((user.data._id).toString(), updateUserDto, { returnDocument: 'after' });
     if(!updatedUser){
         return ApiResponse.error("User not updated", "User update failed");
     }

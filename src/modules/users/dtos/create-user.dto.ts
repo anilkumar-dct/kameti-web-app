@@ -24,8 +24,8 @@ export class CreateUserDto {
 
     @IsString() 
     @IsOptional()
-    trailStartDate?: Date | null    ;
-
+    trailStartDate?: Date | null;
+    
     @IsString()
     @IsOptional()
     trailEndDate?: Date | null;
