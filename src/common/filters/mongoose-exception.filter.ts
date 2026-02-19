@@ -22,37 +22,50 @@ export class MongooseExceptionFilter implements ExceptionFilter {
     const error = exception as Record<string, unknown>;
 
     // Check if it's a Mongoose or MongoDB error
-    const isMongooseError = 
-      error?.name === 'CastError' || 
-      error?.name === 'ValidationError' || 
+    const isMongooseError =
+      error?.name === 'CastError' ||
+      error?.name === 'ValidationError' ||
       error?.code === 11000;
 
     if (isMongooseError) {
       // The utility handles the specific Mongoose/Mongo types
-      const detail = MongooseExceptionExplainer.explain(exception as Error | mongo.MongoServerError);
-      
+      const detail = MongooseExceptionExplainer.explain(
+        exception as Error | mongo.MongoServerError,
+      );
+
       // Return a consistent error response using the project's ApiResponse pattern
       return response
         .status(HttpStatus.BAD_REQUEST)
-        .json(ApiResponse.error(
-          `Database Error: ${detail.kind}`, 
-          detail.message
-        ));
+        .json(
+          ApiResponse.error(`Database Error: ${detail.kind}`, detail.message),
+        );
     }
 
     // For other errors, handle standard NestJS exceptions
-    const status = (exception instanceof Object && 'getStatus' in exception && typeof (exception as { getStatus: Function }).getStatus === 'function') 
-      ? (exception as { getStatus: Function }).getStatus() 
-      : HttpStatus.INTERNAL_SERVER_ERROR;
+    let status: number = HttpStatus.INTERNAL_SERVER_ERROR;
+    if (
+      exception instanceof Object &&
+      'getStatus' in exception &&
+      typeof (exception as { getStatus: () => number }).getStatus === 'function'
+    ) {
+      status = (exception as { getStatus: () => number }).getStatus();
+    }
 
-    const responseContent = error?.response as Record<string, unknown> | undefined;
-    const message = responseContent?.message || error?.message || 'Internal Server Error';
+    const responseContent = error?.response as
+      | Record<string, unknown>
+      | undefined;
+    const message =
+      responseContent?.message || error?.message || 'Internal Server Error';
 
     return response
       .status(status)
-      .json(ApiResponse.error(
-        'Server Error',
-        Array.isArray(message) ? (message as string[]) : [String(message)]
-      ));
+      .json(
+        ApiResponse.error(
+          'Server Error',
+          Array.isArray(message)
+            ? (message as string[])
+            : [typeof message === 'string' ? message : JSON.stringify(message)],
+        ),
+      );
   }
 }

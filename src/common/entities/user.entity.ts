@@ -6,7 +6,6 @@ export type UserDocument = HydratedDocument<User>;
 
 @Schema({ timestamps: true })
 export class User {
-
   @Prop({ required: true, alias: 'user_name' })
   userName: string;
 
@@ -27,12 +26,16 @@ export class User {
   })
   phoneNumber: string | null;
 
-  @Prop({ type: Date, required: false, alias: 'trail_start_date', default: null })
+  @Prop({
+    type: Date,
+    required: false,
+    alias: 'trail_start_date',
+    default: null,
+  })
   trailStartDate: Date | null;
 
   @Prop({ type: Date, required: false, alias: 'trail_end_date', default: null })
   trailEndDate: Date | null;
-
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
