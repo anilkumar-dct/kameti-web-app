@@ -20,7 +20,6 @@ import { UpdateUserDto } from './dtos/update-user.dto';
 import { UserResponseDto } from 'src/common/dto/user-response.dto';
 import { type AuthenticatedRequest } from './interface/authenticated-request';
 
-
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
