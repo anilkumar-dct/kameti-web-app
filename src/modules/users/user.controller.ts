@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch, Post, UseGuards, Request } from "@nestjs/common";
+import { Body, Controller, Get, Param, Patch, Post, UseGuards, Request, Query } from "@nestjs/common";
 import { Request as ExpressRequest } from "express";
 import { UserService } from "./user.service";
 import { CreateUserDto } from "./dtos/create-user.dto";
@@ -39,15 +39,15 @@ export class UserController {
         return this.userService.findById(req.user.userId.toString());
     }
 
+    @Patch('update')
+    async update(@Query('email') email: string, @Body() updateUserDto: UpdateUserDto): Promise<ApiResponse<UserResponseDto>> {
+        return this.userService.update(email, updateUserDto);
+    }
+
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(UserRole.ADMIN)
     @Get(':id')
     async findById(@Param('id') id: string): Promise<ApiResponse<UserResponseDto>> {
         return this.userService.findById(id);
-    }
-
-    @Patch(':id')
-    async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto): Promise<ApiResponse<UserResponseDto>> {
-        return this.userService.update(id, updateUserDto);
     }
 }

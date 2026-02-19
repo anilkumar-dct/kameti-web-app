@@ -75,30 +75,29 @@ export class UserService {
     return ApiResponse.success("Users found successfully", plainToInstance(UserResponseDto, users.map(u => u.toObject())));
   }  
 
-  async update(id: string, updateUserDto: UpdateUserDto): Promise<ApiResponse<UserResponseDto>> {
-    const user = await this.userModel.findById(id);
+  async update(email: string, updateUserDto: UpdateUserDto): Promise<ApiResponse<UserResponseDto>> {
+    const user = await this.userModel.findOne({ email });
     if(!user){
         return ApiResponse.error("User not found", "User not found");
     }
 
-    const updateData: any = { ...updateUserDto };
 
-    if(updateData.password){
-        updateData.password = await bcrypt.hash(updateData.password, 10);
+    if(updateUserDto.password){
+        updateUserDto.password = await bcrypt.hash(updateUserDto.password, 10);
     }
 
     // Role-based trial date management on update
-    if (updateData.role) {
-        if (updateData.role === UserRole.ADMIN) {
-            updateData.trailStartDate = null;
-            updateData.trailEndDate = null;
-        } else if (updateData.role === UserRole.USER && !user.trailStartDate) {
-            updateData.trailStartDate = new Date();
-            updateData.trailEndDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+    if (updateUserDto.role) {
+        if (updateUserDto.role === UserRole.ADMIN) {
+            updateUserDto.trailStartDate = null;
+            updateUserDto.trailEndDate = null;
+        } else if (updateUserDto.role === UserRole.USER && !user.trailStartDate) {
+            updateUserDto.trailStartDate = new Date();
+            updateUserDto.trailEndDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
         }
     }
 
-    const updatedUser = await this.userModel.findByIdAndUpdate(id, updateData, { new: true });
+    const updatedUser = await this.userModel.findByIdAndUpdate((user._id).toString(), updateUserDto, { new: true });
     if(!updatedUser){
         return ApiResponse.error("User not updated", "User update failed");
     }
