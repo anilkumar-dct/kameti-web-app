@@ -2,6 +2,9 @@ import { Injectable, Logger } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
 import { ConfigService } from '../../../config/config.service';
 
+/**
+ * Service to handle email operations.
+ */
 @Injectable()
 export class MailService {
   private transporter: nodemailer.Transporter;
@@ -19,6 +22,11 @@ export class MailService {
     });
   }
 
+  /**
+   * Sends an OTP for password reset.
+   * @param email - Recipient email address
+   * @param otp - The 6-digit OTP code
+   */
   async sendOtp(email: string, otp: string): Promise<void> {
     const mailOptions = {
       from: `"Kameti App" <${this.configService.smtpUser}>`,

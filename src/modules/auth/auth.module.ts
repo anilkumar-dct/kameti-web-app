@@ -23,8 +23,9 @@ import { OtpService } from './services/otp.service';
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
         secret: configService.jwtSecret,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        signOptions: { expiresIn: configService.jwtExpiration as any },
+        signOptions: {
+          expiresIn: configService.jwtExpiration as unknown as number,
+        },
       }),
       inject: [ConfigService],
     }),

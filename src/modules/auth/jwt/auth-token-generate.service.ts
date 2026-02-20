@@ -22,13 +22,12 @@ export class AuthTokenGenerateService {
 
     const expiresIn = this.configService.jwtExpiration;
     return this.jwtService.sign(payload, {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      expiresIn: expiresIn as any,
+      expiresIn: expiresIn as unknown as number,
     });
   }
 
-  async validateUser(userId: number): Promise<UserResponseDto> {
-    const user = await this.userService.findById(userId.toString());
+  async validateUser(userId: string): Promise<UserResponseDto> {
+    const user = await this.userService.findById(userId);
     if (!user) {
       throw new Error('User not found');
     }

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpStatus } from '@nestjs/common';
 import { User, UserDocument } from 'src/common/entities/user.entity';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
@@ -10,12 +10,21 @@ import { plainToInstance } from 'class-transformer';
 import { UserResponseDto } from 'src/common/dto/user-response.dto';
 import * as bcrypt from 'bcrypt';
 
+/**
+ * Service for managing user data and operations.
+ */
 @Injectable()
 export class UserService {
   constructor(
-    @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
+    @InjectModel(User.name)
+    private readonly userModel: Model<UserDocument>,
   ) {}
 
+  /**
+   * Creates a new user or updates an existing one (except for Admin).
+   * @param createUserDto - User details
+   * @returns ApiResponse with the created/updated user
+   */
   async createUser(
     createUserDto: CreateUserDto,
   ): Promise<ApiResponse<UserResponseDto>> {
@@ -23,12 +32,17 @@ export class UserService {
 
     if (existingUser.data) {
       if (existingUser.data.role === UserRole.ADMIN) {
-        return ApiResponse.error('User already exists', 'User already exists');
+        return ApiResponse.error(
+          'User already exists',
+          'User already exists',
+          HttpStatus.CONFLICT,
+        );
       }
+
       const updatedUserDto: UpdateUserDto = {
         ...createUserDto,
-        trailStartDate: existingUser.data.trailStartDate!,
-        trailEndDate: existingUser.data.trailEndDate!,
+        trailStartDate: existingUser.data.trailStartDate,
+        trailEndDate: existingUser.data.trailEndDate,
       };
 
       const updatedUser = await this.update(
@@ -39,6 +53,7 @@ export class UserService {
         'User already exists',
         'User already exists',
         updatedUser.data,
+        HttpStatus.CONFLICT,
       );
     }
 
@@ -65,30 +80,51 @@ export class UserService {
     });
 
     if (!user) {
-      return ApiResponse.error('User not created', 'User creation failed');
+      return ApiResponse.error(
+        'User not created',
+        'User creation failed',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
+
     return ApiResponse.success(
       'User created successfully',
       plainToInstance(UserResponseDto, user.toObject()),
+      HttpStatus.CREATED,
     );
   }
 
+  /**
+   * Finds a user by their email.
+   * @param email - User's email
+   * @returns ApiResponse with the user document
+   */
   async findByEmail(email: string): Promise<ApiResponse<UserDocument | null>> {
     const user = await this.userModel.findOne({ email });
     if (!user) {
       return ApiResponse.fail(
         'User not found with this email',
         'User not found',
-        user,
+        null,
+        HttpStatus.NOT_FOUND,
       );
     }
     return ApiResponse.success('User found successfully', user);
   }
 
+  /**
+   * Finds a user by their ID.
+   * @param id - User's unique ID
+   * @returns ApiResponse with the user record
+   */
   async findById(id: string): Promise<ApiResponse<UserResponseDto>> {
     const user = await this.userModel.findById(id);
     if (!user) {
-      return ApiResponse.error('User not found', 'User not found');
+      return ApiResponse.error(
+        'User not found',
+        'User not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
     return ApiResponse.success(
       'User found successfully',
@@ -96,6 +132,10 @@ export class UserService {
     );
   }
 
+  /**
+   * Retrieves all users.
+   * @returns ApiResponse with a list of users
+   */
   async findAll(): Promise<ApiResponse<UserResponseDto[]>> {
     const users = await this.userModel.find();
     return ApiResponse.success(
@@ -107,18 +147,29 @@ export class UserService {
     );
   }
 
+  /**
+   * Updates an existing user's information.
+   * @param email - User's email
+   * @param updateUserDto - Updated fields
+   * @returns ApiResponse with the updated user details
+   */
   async update(
     email: string,
     updateUserDto: UpdateUserDto,
   ): Promise<ApiResponse<UserResponseDto>> {
     const user = await this.findByEmail(email);
     if (!user.data) {
-      return ApiResponse.error('User not found', 'User not found');
+      return ApiResponse.error(
+        'User not found',
+        'User not found',
+        HttpStatus.NOT_FOUND,
+      );
     }
 
     if (updateUserDto.password) {
       updateUserDto.password = await bcrypt.hash(updateUserDto.password, 10);
     }
+
     // Role-based trial date management on update
     if (user.data.role) {
       if (user.data.role === UserRole.ADMIN) {
@@ -135,9 +186,15 @@ export class UserService {
       updateUserDto,
       { returnDocument: 'after' },
     );
+
     if (!updatedUser) {
-      return ApiResponse.error('User not updated', 'User update failed');
+      return ApiResponse.error(
+        'User not updated',
+        'User update failed',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
+
     return ApiResponse.success(
       'User updated successfully',
       plainToInstance(UserResponseDto, updatedUser.toObject()),
