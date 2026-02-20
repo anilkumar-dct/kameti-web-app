@@ -10,8 +10,8 @@ import { ConfigService } from '../../config/config.service';
 import { AuthTokenGenerateService } from './jwt/auth-token-generate.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Otp, OtpSchema } from '../../common/entities/otp.entity';
-import { MailService } from './mail.service';
-import { OtpService } from './otp.service';
+import { MailService } from './services/mail.service';
+import { OtpService } from './services/otp.service';
 
 @Module({
   imports: [

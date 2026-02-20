@@ -10,8 +10,8 @@ import { AuthTokenGenerateService } from './jwt/auth-token-generate.service';
 import { Response } from 'express';
 import { ConfigService } from 'src/config/config.service';
 import { UserRole } from 'src/common/enums/user-role.enum';
-import { OtpService } from './otp.service';
-import { MailService } from './mail.service';
+import { OtpService } from './services/otp.service';
+import { MailService } from './services/mail.service';
 import { ApiStatus } from 'src/common/enums/api-status.enum';
 
 @Injectable()
