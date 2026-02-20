@@ -44,4 +44,24 @@ export class ConfigService {
     // Default: 2 days in milliseconds
     return 172800000;
   }
+
+  get smtpHost(): string {
+    return this.configService.get<string>('SMTP_HOST') || '';
+  }
+
+  get smtpPort(): number {
+    return this.configService.get<number>('SMTP_PORT') || 465;
+  }
+
+  get smtpUser(): string {
+    return this.configService.get<string>('SMTP_USER') || '';
+  }
+
+  get smtpPassword(): string {
+    return this.configService.get<string>('SMTP_PASS') || '';
+  }
+
+  get smtpSecure(): boolean {
+    return this.configService.get<boolean>('SMTP_SECURE') || false;
+  }
 }

@@ -8,12 +8,17 @@ import { JwtStrategy } from './jwt/strategies/jwt.strategy';
 import { ConfigModule } from '../../config/config.module';
 import { ConfigService } from '../../config/config.service';
 import { AuthTokenGenerateService } from './jwt/auth-token-generate.service';
+import { MongooseModule } from '@nestjs/mongoose';
+import { Otp, OtpSchema } from '../../common/entities/otp.entity';
+import { MailService } from './mail.service';
+import { OtpService } from './otp.service';
 
 @Module({
   imports: [
     UserModule,
     PassportModule,
     ConfigModule,
+    MongooseModule.forFeature([{ name: Otp.name, schema: OtpSchema }]),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
@@ -25,7 +30,13 @@ import { AuthTokenGenerateService } from './jwt/auth-token-generate.service';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, AuthTokenGenerateService],
+  providers: [
+    AuthService,
+    JwtStrategy,
+    AuthTokenGenerateService,
+    MailService,
+    OtpService,
+  ],
   exports: [AuthService, AuthTokenGenerateService],
 })
 export class AuthModule {}

@@ -9,6 +9,10 @@ import { ApiResponse } from 'src/common/response/api.response';
 import { AuthTokenGenerateService } from './jwt/auth-token-generate.service';
 import { Response } from 'express';
 import { ConfigService } from 'src/config/config.service';
+import { UserRole } from 'src/common/enums/user-role.enum';
+import { OtpService } from './otp.service';
+import { MailService } from './mail.service';
+import { ApiStatus } from 'src/common/enums/api-status.enum';
 
 @Injectable()
 export class AuthService {
@@ -16,6 +20,8 @@ export class AuthService {
     private userService: UserService,
     private authTokenGenerateService: AuthTokenGenerateService,
     private configService: ConfigService,
+    private otpService: OtpService,
+    private mailService: MailService,
   ) {}
 
   async register(
@@ -78,5 +84,53 @@ export class AuthService {
       access_token: accessToken,
       user: user,
     });
+  }
+
+  async sendOtp(email: string): Promise<ApiResponse<null>> {
+    const userResponse = await this.userService.findByEmail(email);
+    if (!userResponse.data) {
+      return ApiResponse.error(
+        'User not found',
+        'User with this email does not exist',
+      );
+    }
+
+    const user = userResponse.data;
+    if (user.role !== UserRole.ADMIN) {
+      return ApiResponse.error(
+        'Action not allowed',
+        'Use Desktop application to reset the password',
+      );
+    }
+
+    const otp = await this.otpService.generateOtp(email);
+    await this.mailService.sendOtp(email, otp);
+
+    return ApiResponse.success('OTP sent to your email', null);
+  }
+
+  async verifyOtp(email: string, otp: string): Promise<ApiResponse<null>> {
+    await this.otpService.verifyOtp(email, otp);
+    return ApiResponse.success('OTP verified successfully', null);
+  }
+
+  async resetPassword(
+    email: string,
+    newPassword: string,
+  ): Promise<ApiResponse<null>> {
+    await this.otpService.consumeOtp(email);
+
+    const updateResponse = await this.userService.update(email, {
+      password: newPassword,
+    });
+
+    if (updateResponse.status !== ApiStatus.SUCCESS) {
+      return ApiResponse.error(
+        'Failed to reset password',
+        updateResponse.message,
+      );
+    }
+
+    return ApiResponse.success('Password reset successfully', null);
   }
 }

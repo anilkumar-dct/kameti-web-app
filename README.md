@@ -1,98 +1,122 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Kameti Web Application
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+A robust and scalable backend service built with **NestJS**, designed for managing Kameti transactions and user registrations.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+[![NestJS](https://img.shields.io/badge/framework-NestJS-E0234E?logo=nestjs)](https://nestjs.com/)
+[![TypeScript](https://img.shields.io/badge/language-TypeScript-3178C6?logo=typescript)](https://www.typescriptlang.org/)
+[![Database](https://img.shields.io/badge/database-MongoDB-47A248?logo=mongodb)](https://www.mongodb.com/)
+[![License](https://img.shields.io/badge/license-UNLICENSED-blue.svg)](LICENSE)
 
-## Description
+---
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## 🚀 Overview
 
-## Project setup
+The Kameti Web App provides a secure API for managing users, roles, and kameti memberships. It features a custom exception handling system, cookie-based JWT authentication, and a fully containerized development environment.
+
+### Key Features
+
+- **Authentication**: Secure Login/Signup with JWT stored in `httpOnly` cookies.
+- **Authorization**: Role-based Access Control (RBAC) with custom decorators and guards.
+- **Error Handling**: Standardized API responses with a specialized Mongoose exception filter.
+- **Code Quality**: Enforced via ESLint, Prettier, and Husky pre-commit hooks.
+- **Environment**: Multi-stage Docker builds for development and production.
+
+---
+
+## 🛠 Getting Started
+
+### Prerequisites
+
+| Tool        | Version |
+| :---------- | :------ |
+| **Node.js** | >= 20.x |
+| **pnpm**    | >= 8.x  |
+| **Docker**  | Latest  |
+
+### Installation
+
+1. **Clone the repository**:
+
+   ```bash
+   git clone <repository-url>
+   cd kameti-web-app
+   ```
+
+2. **Install dependencies**:
+
+   ```bash
+   pnpm install
+   ```
+
+3. **Configure Environment Variables**:
+   Create a `.env.development` or `.env.production` file in the root directory based on the `.env.example` (if provided) or following the project's config requirements.
+
+---
+
+## 📡 Running the Project
+
+### Local Development
 
 ```bash
-$ pnpm install
-```
-
-## Compile and run the project
-
-```bash
-# development
-$ pnpm run start
-
-# watch mode
+# Watch mode (automatically restarts on changes)
 $ pnpm run start:dev
 
-# production mode
+# Production mode
 $ pnpm run start:prod
 ```
 
-## Run tests
+### Docker (Recommended)
+
+The easiest way to run the project and its dependencies (MongoDB) is via Docker Compose:
 
 ```bash
-# unit tests
+# Build and start all services
+$ docker-compose up --build
+```
+
+---
+
+## 🧪 Testing & Quality
+
+Manage code quality and run tests using these commands:
+
+```bash
+# Linting (with automatic fixes)
+$ pnpm run lint
+
+# Formatting
+$ pnpm run format
+
+# Run Unit Tests
 $ pnpm run test
 
-# e2e tests
+# Run E2E Tests
 $ pnpm run test:e2e
-
-# test coverage
-$ pnpm run test:cov
 ```
 
-## Deployment
+---
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+## 📘 Documentation
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+For a deeper dive into the technical design, authentication flow, and project structure, please refer to the **[Architecture Guide](ARCHITECTURE.md)**.
 
-```bash
-$ pnpm install -g @nestjs/mau
-$ mau deploy
-```
+### API Endpoints (Brief Overview)
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+- **Auth**: `POST /auth/signup`, `POST /auth/login`
+- **Users**: `POST /user/create`, `GET /user`, `PATCH /user/update`, `GET /user/:id`
 
-## Resources
+---
 
-Check out a few resources that may come in handy when working with NestJS:
+## 🤝 Contributing
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+1. Create a feature branch (`git checkout -b feature/amazing-feature`).
+2. Ensure your changes pass the linter and tests.
+3. Commit your changes (`git commit -m 'Add amazing feature'`).
+4. Push to the branch (`git push origin feature/amazing-feature`).
+5. Open a Pull Request.
 
-## Support
+---
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+## 📄 License
 
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+This project is **UNLICENSED**. See the [package.json](package.json) for more details.
