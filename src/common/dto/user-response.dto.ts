@@ -3,7 +3,10 @@ import { ApiProperty } from '@nestjs/swagger';
 
 @Exclude()
 export class UserResponseDto {
-  @ApiProperty({ description: 'The unique identifier of the user', required: true })
+  @ApiProperty({
+    description: 'The unique identifier of the user',
+    required: true,
+  })
   @Expose()
   _id: string;
 

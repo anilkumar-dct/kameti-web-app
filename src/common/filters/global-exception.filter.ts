@@ -46,7 +46,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
           (resObj.error as string) ||
           message;
       } else {
-        error = res as string;
+        error = res;
       }
     } else if (isMongooseError) {
       // Database specific error handling via specialized explainer

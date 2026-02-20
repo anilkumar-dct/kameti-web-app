@@ -119,7 +119,8 @@ export class ApiErrorResponse extends ApiResponse<null> {
   @ApiProperty({ example: 400 })
   declare statusCode: number;
 
-  @ApiProperty({ example: ['Detailed error message 1', 'Detailed error message 2'] })
+  @ApiProperty({
+    example: ['Detailed error message 1', 'Detailed error message 2'],
+  })
   declare error: string | string[];
 }
-
