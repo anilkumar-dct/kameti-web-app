@@ -71,12 +71,12 @@ export class UserService {
         ? null
         : createUserDto.trailStartDate
           ? createUserDto.trailStartDate
-          : new Date(),
+          : null,
       trailEndDate: isAdmin
         ? null
         : createUserDto.trailEndDate
           ? createUserDto.trailEndDate
-          : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+          : null,
     });
 
     if (!user) {
