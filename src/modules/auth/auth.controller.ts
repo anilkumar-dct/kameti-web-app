@@ -18,7 +18,9 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post('request-otp')
-  @ApiOperation({ summary: 'Request OTP for signup or login' })
+  @ApiOperation({
+    summary: 'Request OTP for signup or login or forgot password',
+  })
   @SwaggerApiResponse({
     status: HttpStatus.OK,
     description: 'OTP sent successfully',
