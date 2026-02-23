@@ -45,7 +45,7 @@ export class OtpService {
    * @throws BadRequestException if OTP is invalid or expired
    */
   async verifyOtp(email: string, otp: string, type: OtpType): Promise<boolean> {
-    const storedOtp = await this.otpModel.findOne({ email, type });
+    const storedOtp = await this.otpModel.findOne({ email, type, isVerified:false });
 
     if (!storedOtp) {
       throw new BadRequestException(
@@ -76,6 +76,7 @@ export class OtpService {
       isVerified: true,
     });
 
+    console.log(verifiedOtp);
     if (!verifiedOtp) {
       throw new BadRequestException(
         `Please verify your OTP first for ${type.toLowerCase()}.`,

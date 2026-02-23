@@ -35,13 +35,20 @@ export class AuthService {
     type: OtpType,
     userName?: string,
   ): Promise<ApiResponse<null>> {
-    if (type === OtpType.SIGNUP) {
+    if (type === OtpType.SIGNUP ) {
       const existingUser = await this.userService.findByEmail(email);
       if (existingUser.data) {
         return ApiResponse.error(
           'User already exists',
           'User already exists',
           HttpStatus.CONFLICT,
+        );
+      }
+      if(!userName){
+        return ApiResponse.error(
+          'User name is required, for new user signup',
+          'User name is required',
+          HttpStatus.BAD_REQUEST,
         );
       }
     } else if (type === OtpType.LOGIN || type === OtpType.FORGOT_PASSWORD) {
