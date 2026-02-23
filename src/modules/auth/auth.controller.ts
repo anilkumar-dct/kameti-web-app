@@ -9,10 +9,7 @@ import { AuthService } from './auth.service';
 import { AuthSignDto } from './dto/auth-sign.dto';
 import { AuthLoginDto } from './dto/auth-login.dto';
 import { SendOtpDto, VerifyOtpDto } from './dto/send-otp.dto';
-import {
-  ApiSuccessResponse,
-  ApiErrorResponse,
-} from '../../common/response/api.response';
+import { ApiSuccessResponse } from '../../common/response/api.response';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 
 @ApiTags('Auth')
