@@ -44,7 +44,7 @@ export class AuthService {
           HttpStatus.CONFLICT,
         );
       }
-    } else if (type === OtpType.LOGIN) {
+    } else if (type === OtpType.LOGIN || type === OtpType.FORGOT_PASSWORD) {
       const userResponse = await this.userService.findByEmail(email);
       if (!userResponse.data) {
         return ApiResponse.error(
@@ -56,14 +56,27 @@ export class AuthService {
     }
 
     const otp = await this.otpService.generateOtp(email, type);
-    const subject =
-      type === OtpType.SIGNUP
-        ? 'Signup Verification OTP'
-        : 'Login Verification OTP';
-    const message =
-      type === OtpType.SIGNUP
-        ? `Welcome ${userName || email}! Your verification code for signing up is`
-        : 'Your verification code for logging in is';
+
+    let subject: string;
+    let message: string;
+
+    switch (type) {
+      case OtpType.SIGNUP:
+        subject = 'Signup Verification OTP';
+        message = `Welcome ${userName || email}! Your verification code for signing up is`;
+        break;
+      case OtpType.LOGIN:
+        subject = 'Login Verification OTP';
+        message = 'Your verification code for logging in is';
+        break;
+      case OtpType.FORGOT_PASSWORD:
+        subject = 'Password Reset OTP';
+        message = 'Your verification code for resetting your password is';
+        break;
+      default:
+        subject = 'Verification OTP';
+        message = 'Your verification code is';
+    }
 
     await this.mailService.sendOtp(email, otp, subject, message);
 
