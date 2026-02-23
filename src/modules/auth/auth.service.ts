@@ -1,4 +1,3 @@
-
 import { Injectable, HttpStatus } from '@nestjs/common';
 import { UserService } from '../users/user.service';
 import { AuthSignDto } from './dto/auth-sign.dto';
@@ -15,6 +14,9 @@ import { MailService } from './services/mail.service';
 import { OtpType } from './enums/otp-type';
 import { ApiStatus } from 'src/common/enums/api-status.enum';
 
+/**
+ * Service to handle user authentication, registration, and password management.
+ */
 @Injectable()
 export class AuthService {
   constructor(
@@ -28,11 +30,19 @@ export class AuthService {
   /**
    * Generates and sends an OTP based on the requested type (SIGNUP/LOGIN).
    */
-  async requestOtp(email: string, type: OtpType, userName?: string): Promise<ApiResponse<null>> {
+  async requestOtp(
+    email: string,
+    type: OtpType,
+    userName?: string,
+  ): Promise<ApiResponse<null>> {
     if (type === OtpType.SIGNUP) {
       const existingUser = await this.userService.findByEmail(email);
       if (existingUser.data) {
-        return ApiResponse.error('User already exists', 'User already exists', HttpStatus.CONFLICT);
+        return ApiResponse.error(
+          'User already exists',
+          'User already exists',
+          HttpStatus.CONFLICT,
+        );
       }
     } else if (type === OtpType.LOGIN) {
       const userResponse = await this.userService.findByEmail(email);
@@ -46,10 +56,14 @@ export class AuthService {
     }
 
     const otp = await this.otpService.generateOtp(email, type);
-    const subject = type === OtpType.SIGNUP ? 'Signup Verification OTP' : 'Login Verification OTP';
-    const message = type === OtpType.SIGNUP 
-      ? `Welcome ${userName || email}! Your verification code for signing up is`
-      : 'Your verification code for logging in is';
+    const subject =
+      type === OtpType.SIGNUP
+        ? 'Signup Verification OTP'
+        : 'Login Verification OTP';
+    const message =
+      type === OtpType.SIGNUP
+        ? `Welcome ${userName || email}! Your verification code for signing up is`
+        : 'Your verification code for logging in is';
 
     await this.mailService.sendOtp(email, otp, subject, message);
 
@@ -59,7 +73,11 @@ export class AuthService {
   /**
    * Verifies an OTP for a specific type.
    */
-  async verifyOtp(email: string, otp: string, type: OtpType): Promise<ApiResponse<null>> {
+  async verifyOtp(
+    email: string,
+    otp: string,
+    type: OtpType,
+  ): Promise<ApiResponse<null>> {
     await this.otpService.verifyOtp(email, otp, type);
     return ApiResponse.success('OTP verified successfully', null);
   }
@@ -67,30 +85,56 @@ export class AuthService {
   /**
    * Registers a new user only if OTP is verified.
    */
-  async register(authSignDto: AuthSignDto, res: Response): Promise<ApiResponse<{ access_token: string, user: UserResponseDto }>> {
+  async register(
+    authSignDto: AuthSignDto,
+    res: Response,
+  ): Promise<ApiResponse<{ access_token: string; user: UserResponseDto }>> {
     // Consume OTP first to ensure verification
     await this.otpService.consumeOtp(authSignDto.email, OtpType.SIGNUP);
 
     const existingUser = await this.userService.findByEmail(authSignDto.email);
     if (existingUser.data) {
-      return ApiResponse.error("User already exists", "User already exists", HttpStatus.CONFLICT);
+      return ApiResponse.error(
+        'User already exists',
+        'User already exists',
+        HttpStatus.CONFLICT,
+      );
     }
 
     const user = await this.userService.createUser(authSignDto);
     if (!user || !user.data) {
-      return ApiResponse.error("User not created", "User creation failed", HttpStatus.INTERNAL_SERVER_ERROR);
+      return ApiResponse.error(
+        'User not created',
+        'User creation failed',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
 
     const accessToken = this.authTokenGenerateService.generateToken(user.data);
-    this.authTokenGenerateService.storeValueInCookie(res, this.configService.cookieName, accessToken);
+    this.authTokenGenerateService.storeValueInCookie(
+      res,
+      this.configService.cookieName,
+      accessToken,
+    );
 
-    return ApiResponse.success("User created successfully", {
-      access_token: accessToken,
-      user: user.data
-    }, HttpStatus.CREATED);
+    return ApiResponse.success(
+      'User created successfully',
+      {
+        access_token: accessToken,
+        user: user.data,
+      },
+      HttpStatus.CREATED,
+    );
   }
 
-  private async validateUser(email: string, pass: string): Promise<UserResponseDto | null> {
+  /**
+   * Validates user credentials.
+   * @private
+   */
+  private async validateUser(
+    email: string,
+    pass: string,
+  ): Promise<UserResponseDto | null> {
     const user = await this.userService.findByEmail(email);
     if (user.data && (await bcrypt.compare(pass, user.data.password))) {
       const result = user.data.toObject() as unknown as Record<string, any>;
@@ -103,21 +147,35 @@ export class AuthService {
   /**
    * Authenticates a user only if OTP is verified.
    */
-  async login(authLoginDto: AuthLoginDto, res: Response): Promise<ApiResponse<{ access_token: string, user: UserResponseDto }>> {
+  async login(
+    authLoginDto: AuthLoginDto,
+    res: Response,
+  ): Promise<ApiResponse<{ access_token: string; user: UserResponseDto }>> {
     // Consume OTP first to ensure verification
     await this.otpService.consumeOtp(authLoginDto.email, OtpType.LOGIN);
 
-    const user = await this.validateUser(authLoginDto.email, authLoginDto.password);
+    const user = await this.validateUser(
+      authLoginDto.email,
+      authLoginDto.password,
+    );
     if (!user) {
-      return ApiResponse.error("Invalid credentials", "Invalid email or password", HttpStatus.UNAUTHORIZED);
+      return ApiResponse.error(
+        'Invalid credentials',
+        'Invalid email or password',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
 
     const accessToken = this.authTokenGenerateService.generateToken(user);
-    this.authTokenGenerateService.storeValueInCookie(res, this.configService.cookieName, accessToken);
+    this.authTokenGenerateService.storeValueInCookie(
+      res,
+      this.configService.cookieName,
+      accessToken,
+    );
 
-    return ApiResponse.success("Login successful", {
+    return ApiResponse.success('Login successful', {
       access_token: accessToken,
-      user: user
+      user: user,
     });
   }
 
@@ -125,7 +183,6 @@ export class AuthService {
     email: string,
     newPassword: string,
   ): Promise<ApiResponse<null>> {
-
     await this.otpService.consumeOtp(email, OtpType.FORGOT_PASSWORD);
 
     const updateResponse = await this.userService.update(email, {

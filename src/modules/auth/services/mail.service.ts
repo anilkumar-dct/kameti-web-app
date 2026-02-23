@@ -29,7 +29,12 @@ export class MailService {
    * @param subject - Email subject
    * @param message - Email message body
    */
-  async sendOtp(email: string, otp: string, subject: string, message: string): Promise<void> {
+  async sendOtp(
+    email: string,
+    otp: string,
+    subject: string,
+    message: string,
+  ): Promise<void> {
     const mailOptions = {
       from: `"Kameti App" <${this.configService.smtpUser}>`,
       to: email,

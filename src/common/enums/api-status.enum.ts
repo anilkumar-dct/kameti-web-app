@@ -1,5 +1,5 @@
 export enum ApiStatus {
-    SUCCESS = 'SUCCESS',
-    ERROR = 'ERROR',
-    FAIL = 'FAIL'
+  SUCCESS = 'SUCCESS',
+  ERROR = 'ERROR',
+  FAIL = 'FAIL',
 }

@@ -1,4 +1,3 @@
-
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthController } from './auth.controller';
@@ -22,15 +21,23 @@ import { MailService } from './services/mail.service';
     MongooseModule.forFeature([{ name: Otp.name, schema: OtpSchema }]),
     JwtModule.registerAsync({
       imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
+      useFactory: (configService: ConfigService) => ({
         secret: configService.jwtSecret,
-        signOptions: { expiresIn: configService.jwtExpiration } as any,
+        signOptions: {
+          expiresIn: configService.jwtExpiration as unknown as number,
+        },
       }),
       inject: [ConfigService],
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, AuthTokenGenerateService, OtpService, MailService],
-  exports: [AuthService, AuthTokenGenerateService]
+  providers: [
+    AuthService,
+    JwtStrategy,
+    AuthTokenGenerateService,
+    OtpService,
+    MailService,
+  ],
+  exports: [AuthService, AuthTokenGenerateService],
 })
 export class AuthModule {}
