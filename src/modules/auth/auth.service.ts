@@ -35,7 +35,7 @@ export class AuthService {
     type: OtpType,
     userName?: string,
   ): Promise<ApiResponse<null>> {
-    if (type === OtpType.SIGNUP ) {
+    if (type === OtpType.SIGNUP) {
       const existingUser = await this.userService.findByEmail(email);
       if (existingUser.data) {
         return ApiResponse.error(
@@ -44,7 +44,7 @@ export class AuthService {
           HttpStatus.CONFLICT,
         );
       }
-      if(!userName){
+      if (!userName) {
         return ApiResponse.error(
           'User name is required, for new user signup',
           'User name is required',
@@ -217,5 +217,16 @@ export class AuthService {
     }
 
     return ApiResponse.success('Password reset successfully', null);
+  }
+
+  /**
+   * Logs out a user by clearing the authentication cookie.
+   */
+  logout(res: Response): ApiResponse<null> {
+    this.authTokenGenerateService.clearCookie(
+      res,
+      this.configService.cookieName,
+    );
+    return ApiResponse.success('Logout successful', null);
   }
 }

@@ -43,4 +43,13 @@ export class AuthTokenGenerateService {
       path: '/',
     });
   }
+
+  clearCookie(res: Response, key: string): void {
+    res.clearCookie(key, {
+      httpOnly: true,
+      secure: this.configService.isProduction,
+      sameSite: this.configService.isProduction ? 'none' : 'lax',
+      path: '/',
+    });
+  }
 }
