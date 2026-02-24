@@ -5,7 +5,7 @@ import { JwtPayload } from '../interface';
 import { Request } from 'express';
 
 import { ConfigService } from '../../../../config/config.service';
-import { UserService } from 'src/modules/users/user.service';
+import { UserService } from '../../../../modules/users/user.service';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {

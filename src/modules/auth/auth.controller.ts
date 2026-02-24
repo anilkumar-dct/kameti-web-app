@@ -22,8 +22,8 @@ import {
   ApiSuccessResponse,
 } from '../../common/response/api.response';
 import { ResetPasswordDto } from './dto/reset-password.dto';
-import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
-import { UserResponseDto } from 'src/common/dto/user-response.dto';
+import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { UserResponseDto } from '../../common/dto/user-response.dto';
 
 @ApiTags('Auth')
 @Controller('auth')
