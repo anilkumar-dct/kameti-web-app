@@ -17,7 +17,10 @@ import { AuthService } from './auth.service';
 import { AuthSignDto } from './dto/auth-sign.dto';
 import { AuthLoginDto } from './dto/auth-login.dto';
 import { SendOtpDto, VerifyOtpDto } from './dto/send-otp.dto';
-import { ApiResponse, ApiSuccessResponse } from '../../common/response/api.response';
+import {
+  ApiResponse,
+  ApiSuccessResponse,
+} from '../../common/response/api.response';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 import { UserResponseDto } from 'src/common/dto/user-response.dto';
@@ -36,7 +39,7 @@ export class AuthController {
     description: 'OTP sent successfully',
     type: ApiSuccessResponse,
   })
-  async requestOtp(@Body() sendOtpDto: SendOtpDto) : Promise<ApiResponse<null>> {
+  async requestOtp(@Body() sendOtpDto: SendOtpDto): Promise<ApiResponse<null>> {
     return this.authService.requestOtp(
       sendOtpDto.email,
       sendOtpDto.type,
@@ -51,7 +54,9 @@ export class AuthController {
     description: 'OTP verified successfully',
     type: ApiSuccessResponse,
   })
-  async verifyOtp(@Body() verifyOtpDto: VerifyOtpDto) : Promise<ApiResponse<null>> {
+  async verifyOtp(
+    @Body() verifyOtpDto: VerifyOtpDto,
+  ): Promise<ApiResponse<null>> {
     return this.authService.verifyOtp(
       verifyOtpDto.email,
       verifyOtpDto.otp,
@@ -69,7 +74,7 @@ export class AuthController {
   async signup(
     @Body() authSignDto: AuthSignDto,
     @Res({ passthrough: true }) res: Response,
-  ) : Promise<ApiResponse<{ access_token: string; user: UserResponseDto }>> {
+  ): Promise<ApiResponse<{ access_token: string; user: UserResponseDto }>> {
     return this.authService.register(authSignDto, res);
   }
 
@@ -83,7 +88,7 @@ export class AuthController {
   async login(
     @Body() authLoginDto: AuthLoginDto,
     @Res({ passthrough: true }) res: Response,
-  ) : Promise<ApiResponse<{ access_token: string; user: UserResponseDto }>> {
+  ): Promise<ApiResponse<{ access_token: string; user: UserResponseDto }>> {
     return this.authService.login(authLoginDto, res);
   }
 
@@ -94,7 +99,9 @@ export class AuthController {
     description: 'Password reset successfully',
     type: ApiSuccessResponse,
   })
-  async resetPassword(@Body() resetPasswordDto: ResetPasswordDto): Promise<ApiResponse<null>> {
+  async resetPassword(
+    @Body() resetPasswordDto: ResetPasswordDto,
+  ): Promise<ApiResponse<null>> {
     return this.authService.resetPassword(
       resetPasswordDto.email,
       resetPasswordDto.newPassword,
@@ -110,7 +117,7 @@ export class AuthController {
     description: 'Logout successful',
     type: ApiSuccessResponse,
   })
-  logout(@Res({ passthrough: true }) res: Response):  ApiResponse<null>  {
+  logout(@Res({ passthrough: true }) res: Response): ApiResponse<null> {
     return this.authService.logout(res);
   }
 }
