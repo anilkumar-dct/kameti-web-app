@@ -4,7 +4,9 @@ version: '3.9'
 
 services:
   app:
-    build: .
+    build:
+      context: .
+      target: development
     container_name: kameti-web-app
     restart: unless-stopped
     ports:
@@ -13,6 +15,18 @@ services:
       - .env.development
     depends_on:
       - mongo
+    develop:
+      watch:
+        - action: sync
+          path: ./src
+          target: /app/src
+          ignore:
+            - node_modules/
+        - action: sync
+          path: ./package.json
+          target: /app/package.json
+        - action: rebuild
+          path: ./pnpm-lock.yaml
 
   mongo:
     image: mongo:6
