@@ -1,13 +1,13 @@
 import { Injectable, HttpStatus } from '@nestjs/common';
-import { User, UserDocument } from 'src/common/entities/user.entity';
+import { User, UserDocument } from '../../common/entities/user.entity';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import { ApiResponse } from 'src/common/response/api.response';
+import { ApiResponse } from '../../common/response/api.response';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { UpdateUserDto } from './dtos/update-user.dto';
-import { UserRole } from 'src/common/enums/user-role.enum';
+import { UserRole } from '../../common/enums/user-role.enum';
 import { plainToInstance } from 'class-transformer';
-import { UserResponseDto } from 'src/common/dto/user-response.dto';
+import { UserResponseDto } from '../../common/dto/user-response.dto';
 import * as bcrypt from 'bcrypt';
 
 /**

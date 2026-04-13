@@ -3,16 +3,16 @@ import { UserService } from '../users/user.service';
 import { AuthSignDto } from './dto/auth-sign.dto';
 import { AuthLoginDto } from './dto/auth-login.dto';
 import * as bcrypt from 'bcrypt';
-import { UserResponseDto } from 'src/common/dto/user-response.dto';
+import { UserResponseDto } from '../../common/dto/user-response.dto';
 import { plainToInstance } from 'class-transformer';
-import { ApiResponse } from 'src/common/response/api.response';
+import { ApiResponse } from '../../common/response/api.response';
 import { AuthTokenGenerateService } from './jwt/auth-token-generate.service';
-import { Response } from 'express';
-import { ConfigService } from 'src/config/config.service';
+import type { Response } from 'express';
+import { ConfigService } from '../../config/config.service';
 import { OtpService } from './services/otp.service';
 import { MailService } from './services/mail.service';
 import { OtpType } from './enums/otp-type';
-import { ApiStatus } from 'src/common/enums/api-status.enum';
+import { ApiStatus } from '../../common/enums/api-status.enum';
 
 /**
  * Service to handle user authentication, registration, and password management.
@@ -223,10 +223,9 @@ export class AuthService {
    * Logs out a user by clearing the authentication cookie.
    */
   logout(res: Response): ApiResponse<null> {
-    this.authTokenGenerateService.clearCookie(
-      res,
-      this.configService.cookieName,
-    );
-    return ApiResponse.success('Logout successful', null);
+    const tokenService: AuthTokenGenerateService =
+      this.authTokenGenerateService;
+    tokenService.clearCookie(res, this.configService.cookieName);
+    return ApiResponse.success<null>('Logout successful', null);
   }
 }

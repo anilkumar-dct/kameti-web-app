@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './interface';
-import { ConfigService } from 'src/config/config.service';
-import { UserService } from 'src/modules/users/user.service';
-import { UserResponseDto } from 'src/common/dto/user-response.dto';
+import { ConfigService } from '../../../config/config.service';
+import { UserService } from '../../users/user.service';
+import { UserResponseDto } from '../../../common/dto/user-response.dto';
 import { Response } from 'express';
 
 @Injectable()

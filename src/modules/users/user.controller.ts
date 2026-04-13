@@ -18,17 +18,17 @@ import {
 } from '@nestjs/swagger';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dtos/create-user.dto';
-import { RolesGuard } from 'src/common/guards/roles.guard';
-import { Roles } from 'src/common/decorators/roles.decorator';
-import { UserRole } from 'src/common/enums/user-role.enum';
+import { RolesGuard } from '../../common/guards/roles.guard';
+import { Roles } from '../../common/decorators/roles.decorator';
+import { UserRole } from '../../common/enums/user-role.enum';
 import {
   ApiResponse,
   ApiSuccessResponse,
   ApiErrorResponse,
-} from 'src/common/response/api.response';
-import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
+} from '../../common/response/api.response';
+import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { UpdateUserDto } from './dtos/update-user.dto';
-import { UserResponseDto } from 'src/common/dto/user-response.dto';
+import { UserResponseDto } from '../../common/dto/user-response.dto';
 import { type AuthenticatedRequest } from './interface/authenticated-request';
 
 /**
